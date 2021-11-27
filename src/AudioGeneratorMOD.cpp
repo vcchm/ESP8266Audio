@@ -565,7 +565,7 @@ bool AudioGeneratorMOD::ProcessRow()
       Mixer.channelFrequency[channel] = Player.amiga / Player.lastAmigaPeriod[channel];
 
     if (note != NONOTE)
-      Mixer.channelSampleOffset[channel] = sampleOffset << DIVIDER;
+      Mixer.channelSampleOffset[channel] = sampleOffset << MOD_DIVIDER;
 
     if (sampleNumber)
       Mixer.channelSampleNumber[channel] = Player.lastSampleNumber[channel];
@@ -757,12 +757,12 @@ void AudioGeneratorMOD::GetSample(int16_t sample[2])
     if (!Mixer.channelVolume[channel]) continue;
 
     samplePointer = Mixer.sampleBegin[Mixer.channelSampleNumber[channel]] +
-                    (Mixer.channelSampleOffset[channel] >> DIVIDER);
+                    (Mixer.channelSampleOffset[channel] >> MOD_DIVIDER);
 
     if (Mixer.sampleLoopLength[Mixer.channelSampleNumber[channel]]) {
 
       if (samplePointer >= Mixer.sampleLoopEnd[Mixer.channelSampleNumber[channel]]) {
-        Mixer.channelSampleOffset[channel] -= Mixer.sampleLoopLength[Mixer.channelSampleNumber[channel]] << DIVIDER;
+        Mixer.channelSampleOffset[channel] -= Mixer.sampleLoopLength[Mixer.channelSampleNumber[channel]] << MOD_DIVIDER;
         samplePointer -= Mixer.sampleLoopLength[Mixer.channelSampleNumber[channel]];
       }
 
@@ -801,7 +801,7 @@ void AudioGeneratorMOD::GetSample(int16_t sample[2])
     out = current;
 
     // Integer linear interpolation
-    out += (next - current) * (Mixer.channelSampleOffset[channel] & ((1 << DIVIDER) - 1)) >> DIVIDER;
+    out += (next - current) * (Mixer.channelSampleOffset[channel] & ((1 << MOD_DIVIDER) - 1)) >> MOD_DIVIDER;
 
     // Upscale to BITDEPTH
     out <<= BITDEPTH - 8;
